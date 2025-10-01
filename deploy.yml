@@ -1,0 +1,52 @@
+---
+- name: Deploy journal vacuum service to PickData devices
+  hosts: pd_devices
+  gather_facts: false
+  serial: 10
+  
+  vars:
+    local_vacuum_service: "files/vacuum-journal.service"
+    local_vacuum_timer: "files/vacuum-journal.timer"
+
+  tasks:
+    - name: Test connection
+      wait_for_connection:
+        timeout: 15
+
+    - name: Check if vacuum-journal timer already exists
+      stat:
+        path: /etc/systemd/system/vacuum-journal.timer
+      register: timer_exists
+
+    - name: Skip host if vacuum-journal already configured
+      debug:
+        msg: "vacuum-journal.timer already exists on {{ inventory_hostname }} - skipping"
+      when: timer_exists.stat.exists
+
+    - name: End play for hosts that already have vacuum-journal configured
+      meta: end_host
+      when: timer_exists.stat.exists
+      
+    - name: Copy vacuum service files
+      copy:
+        src: "{{ item }}"
+        dest: "/etc/systemd/system/"
+        mode: '0644'
+      loop:
+        - "{{ local_vacuum_service }}"
+        - "{{ local_vacuum_timer }}"
+      when: not timer_exists.stat.exists
+
+    - name: Configure and enable vacuum service
+      shell: |
+        systemctl daemon-reload
+        systemctl enable vacuum-journal.timer
+        systemctl start vacuum-journal.timer
+      when: not timer_exists.stat.exists
+
+    - name: Verify vacuum timer is active
+      systemd:
+        name: vacuum-journal.timer
+      register: timer_status
+      failed_when: timer_status.status.ActiveState != "active"
+      when: not timer_exists.stat.exists

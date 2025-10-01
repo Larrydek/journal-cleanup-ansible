@@ -1,0 +1,6 @@
+[Unit]
+Description=Vacuum systemd journal to save size
+
+[Service]
+Type=oneshot
+ExecStart=/bin/journalctl --vacuum-size=20M --vacuum-time=10d

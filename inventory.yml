@@ -1,0 +1,12 @@
+all:
+  children:
+    pd_devices:
+      hosts:
+        <device-ip-1>:
+        <device-ip-2>:
+        <device-ip-3>:
+      vars:
+        ansible_user: root
+        ansible_ssh_pass: <password>
+        ansible_host_key_checking: false
+        ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=15 -o PubkeyAcceptedKeyTypes=+ssh-rsa -o HostKeyAlgorithms=+ssh-rsa'
