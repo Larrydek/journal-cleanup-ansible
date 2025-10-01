@@ -27,7 +27,6 @@ This project deploys a systemd timer that automatically cleans the systemd journ
 ├── deploy.yml                     # Main deployment playbook
 ├── inventory.yml                  # Device inventory (IPs and credentials)
 ├── run-deployment.sh              # Deployment executor script
-├── check-status.yml               # Status verification playbook (optional)
 └── files/
     ├── vacuum-journal.service     # Systemd service unit
     └── vacuum-journal.timer       # Systemd timer unit
@@ -262,15 +261,3 @@ ansible-vault encrypt inventory.yml
 # Run with vault password
 ansible-playbook deploy.yml --ask-vault-pass
 ```
-
-## 📄 License
-
-MIT
-
-## 🤝 Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request.
-
-## 📧 Support
-
-For issues or questions, please open a GitHub issue.
